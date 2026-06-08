@@ -19,6 +19,22 @@ MeMomy is a PWA for Iranian diaspora women covering the pregnancy journey, deepl
 - `lib/asadoc/`: Core abstraction for the AsaDoc integration. Modeled so `ASADOC_MODE` env var handles switching between mock behavior and real API interactions when implemented.
 - `utils/supabase/`: Supabase clients instantiated for server vs. client boundaries.
 
+## Backlog & Task Tracking
+
+The `backlog/` directory is the single source of truth for all product work:
+
+- `backlog/EPICS.md` — high-level themes and their status
+- `backlog/BACKLOG.md` — all user stories and tasks with `[TODO]` / `[IN PROGRESS]` / `[DONE]` / `[BLOCKED]` status
+- `backlog/BUGS.md` — all bugs, open and fixed
+- `backlog/ARCHIVE.md` — deprioritized or ruled-out items with reasons (nothing is ever deleted)
+
+**When working with Claude Code:**
+- Read `backlog/BACKLOG.md` at the start of any feature work to understand current state
+- Mark tasks `[DONE]` as they are completed
+- Log new bugs in `backlog/BUGS.md` immediately when found
+- Move deprioritized items to `backlog/ARCHIVE.md` with a reason — never delete them
+- When the user mentions a new feature idea, add it to `ARCHIVE.md` under "Ideas Considered But Not Yet Scoped" first
+
 ## Rules & Conventions
 
 - **Next.js 16 Conventions**: Follow breaking changes and modern conventions (note the deprecation of `middleware` in favor of `proxy` in the current build output). Read `node_modules/next/dist/docs/` for specific API changes compared to older versions.
