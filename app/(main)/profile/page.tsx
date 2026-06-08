@@ -1,10 +1,9 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import type { JourneyStage } from "@/lib/timeline/types";
-import { getWarningSigns } from "@/lib/warning-signs/data";
-import WarningSignsClient from "./WarningSignsClient";
+import ProfileClient from "./ProfileClient";
 
-export default async function WarningSignsPage() {
+export default async function ProfilePage() {
   const supabase = await createClient();
 
   const {
@@ -15,12 +14,17 @@ export default async function WarningSignsPage() {
 
   const { data: profile } = await supabase
     .from("pregnancy_profiles")
-    .select("stage")
+    .select("stage, due_date")
     .eq("user_id", user.id)
     .single();
 
-  const stage: JourneyStage = (profile?.stage as JourneyStage) ?? "pregnant";
-  const categories = getWarningSigns(stage);
+  if (!profile) return redirect("/setup");
 
-  return <WarningSignsClient stage={stage} categories={categories} />;
+  return (
+    <ProfileClient
+      email={user.email ?? ""}
+      stage={profile.stage as JourneyStage}
+      dueDate={profile.due_date ?? null}
+    />
+  );
 }

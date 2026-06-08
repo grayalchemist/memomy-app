@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Stethoscope, HeartPulse, User } from "lucide-react";
+import { Home, CalendarDays, HeartPulse, User } from "lucide-react";
 
 export function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
     { href: "/dashboard", icon: Home, label: "Home" },
-    { href: "/book", icon: Stethoscope, label: "Specialists" },
+    { href: "/calendar", icon: CalendarDays, label: "Calendar" },
     { href: "/check-in", icon: HeartPulse, label: "Wellbeing" },
     { href: "/profile", icon: User, label: "Profile" },
   ];
