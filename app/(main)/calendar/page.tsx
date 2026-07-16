@@ -8,14 +8,14 @@ export default async function CalendarPage() {
   if (!user) return redirect("/login");
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg-base items-center justify-center p-8 pb-28 text-center">
+    <div className="flex flex-col min-h-screen bg-background items-center justify-center p-8 pb-28 text-center">
       <div className="bg-primary/10 p-6 rounded-full mb-6">
         <CalendarDays className="h-12 w-12 text-primary" />
       </div>
-      <h1 className="font-serif text-2xl font-bold text-text-primary mb-3">
+      <h1 className="font-heading text-2xl font-bold text-foreground mb-3">
         Your Journey Calendar
       </h1>
-      <p className="text-text-secondary text-base max-w-xs leading-relaxed">
+      <p className="text-foreground-secondary text-base max-w-xs leading-relaxed">
         Your mood check-ins, kick counts, and contraction sessions will all appear here.
         Coming soon.
       </p>

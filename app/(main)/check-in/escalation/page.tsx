@@ -2,7 +2,13 @@
 
 import { useRouter } from "next/navigation";
 import { recordEscalationAction } from "@/app/actions/checkin";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { PhoneCall, CalendarHeart, X, ExternalLink } from "lucide-react";
@@ -53,32 +59,35 @@ export default function EscalationPage() {
 
   return (
     <>
-      <div className="flex flex-col min-h-screen bg-bg-base p-4 justify-center pb-24">
-        <Card className="border-0 shadow-2xl bg-white overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-full h-2 bg-amber-400" />
-          <CardHeader className="text-left pb-4 pt-8 border-b border-border/40">
-            <CardTitle className="font-serif text-2xl font-bold text-text-primary mb-3 leading-snug">
+      <div className="flex min-h-screen flex-col justify-center bg-background p-4 pb-28">
+        <Card className="animate-fade-up relative overflow-hidden border-0 shadow-2xl">
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-warning to-destructive" />
+          <CardHeader className="border-b border-border/60 pb-4 pt-8 text-left">
+            <CardTitle className="font-heading text-2xl font-bold leading-snug text-foreground">
               It sounds like things feel heavy right now.
             </CardTitle>
-            <CardDescription className="text-base text-text-secondary leading-relaxed">
-              Pregnancy is beautiful and incredibly hard. Many women feel this way, but you don't have
-              to carry it alone. Here are some options to get support right now.
+            <CardDescription className="text-base leading-relaxed text-foreground-secondary">
+              Pregnancy is beautiful and incredibly hard. Many women feel this
+              way, but you don&apos;t have to carry it alone. Here are some
+              options to get support right now.
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="pt-6 space-y-4">
+          <CardContent className="space-y-4 pt-6">
             <Button
               variant="outline"
-              className="w-full h-auto py-4 flex justify-start items-center gap-4 bg-primary/5 hover:bg-primary/10 border-primary/20 text-left"
+              className="h-auto w-full justify-start gap-4 border-primary/20 bg-primary/5 py-4 text-left hover:bg-primary/10"
               onClick={() => handleAction("booked")}
               disabled={loadingAction !== null}
             >
-              <div className="bg-white p-3 rounded-full shadow-sm border border-primary/10">
-                <CalendarHeart className="h-6 w-6 text-primary" />
+              <div className="flex size-12 items-center justify-center rounded-full border border-primary/10 bg-card shadow-sm">
+                <CalendarHeart className="size-6 text-primary" />
               </div>
               <div>
-                <div className="font-bold text-primary text-base">Talk to a Psychologist</div>
-                <div className="text-xs text-text-secondary font-normal mt-1">
+                <div className="text-base font-bold text-primary">
+                  Talk to a Psychologist
+                </div>
+                <div className="mt-1 text-xs font-normal text-foreground-secondary">
                   Book a video session with a Farsi-speaking specialist.
                 </div>
               </div>
@@ -86,17 +95,19 @@ export default function EscalationPage() {
 
             <Button
               variant="outline"
-              className="w-full h-auto py-4 flex justify-start items-center gap-4 bg-white hover:bg-red-50 border-border text-left"
+              className="h-auto w-full justify-start gap-4 border-destructive/20 bg-destructive/5 py-4 text-left hover:bg-destructive/10"
               onClick={() => handleAction("crisis_viewed")}
               disabled={loadingAction !== null}
             >
-              <div className="bg-red-50 p-3 rounded-full border border-red-100">
-                <PhoneCall className="h-6 w-6 text-red-500" />
+              <div className="flex size-12 items-center justify-center rounded-full border border-destructive/10 bg-destructive/10">
+                <PhoneCall className="size-6 text-destructive" />
               </div>
               <div>
-                <div className="font-bold text-text-primary text-base">View Crisis Resources</div>
-                <div className="text-xs text-text-secondary font-normal mt-1">
-                  Free, confidential 24/7 support in Canada.
+                <div className="text-base font-bold text-foreground">
+                  View Crisis Resources
+                </div>
+                <div className="mt-1 text-xs font-normal text-foreground-secondary">
+                  Free, confidential 24/7 support.
                 </div>
               </div>
             </Button>
@@ -105,12 +116,12 @@ export default function EscalationPage() {
               <button
                 onClick={() => handleAction("dismissed")}
                 disabled={loadingAction !== null}
-                className="text-sm font-semibold text-text-muted hover:text-text-primary flex items-center justify-center gap-2 mx-auto"
+                className="mx-auto flex items-center justify-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground"
               >
-                <X className="h-4 w-4" /> Not right now, thank you
+                <X className="size-4" /> Not right now, thank you
               </button>
-              <p className="text-xs text-text-muted/60 mt-2">
-                We'll just check back with you in a few days.
+              <p className="mt-2 text-xs text-muted-foreground/70">
+                We&apos;ll just check back with you in a few days.
               </p>
             </div>
           </CardContent>
@@ -118,14 +129,18 @@ export default function EscalationPage() {
       </div>
 
       <Sheet open={crisisOpen} onOpenChange={setCrisisOpen}>
-        <SheetContent side="bottom" className="rounded-t-3xl p-0 max-h-[85vh] overflow-y-auto">
-          <div className="p-6 pt-10 space-y-6">
+        <SheetContent
+          side="bottom"
+          className="max-h-[85vh] overflow-y-auto rounded-t-4xl p-0"
+        >
+          <div className="space-y-6 p-6 pt-10">
             <SheetHeader className="text-left">
-              <SheetTitle className="font-serif text-2xl font-bold text-text-primary">
-                Crisis Support — Canada
+              <SheetTitle className="font-heading text-2xl font-bold text-foreground">
+                Crisis Support
               </SheetTitle>
-              <p className="text-sm text-text-secondary mt-1">
-                All lines below are free, confidential, and available to you right now.
+              <p className="mt-1 text-sm text-foreground-secondary">
+                All lines below are free, confidential, and available to you
+                right now.
               </p>
             </SheetHeader>
 
@@ -135,29 +150,37 @@ export default function EscalationPage() {
                   key={line.name}
                   href={line.href}
                   target={line.href.startsWith("http") ? "_blank" : undefined}
-                  rel={line.href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className="flex items-start gap-4 bg-bg-muted rounded-xl p-4 hover:bg-primary/5 transition-colors no-underline"
+                  rel={
+                    line.href.startsWith("http") ? "noopener noreferrer" : undefined
+                  }
+                  className="no-underline flex items-start gap-4 rounded-2xl bg-muted p-4 transition-colors hover:bg-destructive/5"
                 >
-                  <div className="bg-red-50 p-2 rounded-full border border-red-100 mt-0.5 flex-shrink-0">
+                  <div className="mt-0.5 flex size-9 flex-shrink-0 items-center justify-center rounded-full border border-destructive/10 bg-destructive/10">
                     {line.href.startsWith("http") ? (
-                      <ExternalLink className="h-5 w-5 text-red-500" />
+                      <ExternalLink className="size-5 text-destructive" />
                     ) : (
-                      <PhoneCall className="h-5 w-5 text-red-500" />
+                      <PhoneCall className="size-5 text-destructive" />
                     )}
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-widest font-bold text-text-muted mb-0.5">
+                    <p className="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                       {line.country}
                     </p>
-                    <p className="font-bold text-text-primary text-base">{line.name}</p>
-                    <p className="text-accent font-semibold text-sm mt-0.5">{line.number}</p>
-                    <p className="text-xs text-text-secondary mt-1">{line.note}</p>
+                    <p className="text-base font-bold text-foreground">
+                      {line.name}
+                    </p>
+                    <p className="mt-0.5 text-sm font-semibold text-accent">
+                      {line.number}
+                    </p>
+                    <p className="mt-1 text-xs text-foreground-secondary">
+                      {line.note}
+                    </p>
                   </div>
                 </a>
               ))}
             </div>
 
-            <p className="text-xs text-text-muted text-center pb-4">
+            <p className="pb-4 text-center text-xs font-semibold text-destructive">
               If you are in immediate danger, call 911.
             </p>
           </div>

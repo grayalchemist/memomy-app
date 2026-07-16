@@ -22,30 +22,35 @@ export default function LoginPage() {
     setIsLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      router.push("/dashboard");
+      if (error) {
+        setError(error.message);
+      } else {
+        router.push("/dashboard");
+      }
+    } catch {
+      setError("We could not reach the secure sign-in service. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="font-serif text-4xl font-bold tracking-tight text-primary">MeMomy</h1>
+          <h1 className="font-heading text-4xl font-bold tracking-tight text-primary">MeMomy</h1>
           <p className="mt-3 font-sans text-lg text-muted-foreground">Your pregnancy journey, supported.</p>
         </div>
 
         <Card className="shadow-lg border-primary/10">
           <CardHeader>
-            <CardTitle className="font-serif text-2xl font-semibold">Welcome back</CardTitle>
+            <CardTitle className="font-heading text-2xl font-semibold">Welcome back</CardTitle>
             <CardDescription className="font-sans">Enter your email and password to log in.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -64,7 +69,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white/50 focus-visible:ring-primary"
+                  className="bg-card/50 focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -80,7 +85,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-white/50 focus-visible:ring-primary"
+                  className="bg-card/50 focus-visible:ring-primary"
                 />
               </div>
               <Button type="submit" className="w-full font-bold" disabled={isLoading}>
@@ -89,7 +94,7 @@ export default function LoginPage() {
             </form>
           </CardContent>
           <CardFooter className="justify-center border-t border-border/50 pt-6 font-sans text-sm text-muted-foreground">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/signup" className="ml-1 font-semibold text-primary hover:underline">
               Sign up
             </Link>

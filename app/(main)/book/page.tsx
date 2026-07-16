@@ -4,82 +4,108 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Star, ShieldCheck, HeartHandshake, Filter } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default async function BookingDirectoryPage({
   searchParams,
 }: {
-  searchParams: { type?: string };
+  searchParams: Promise<{ type?: string }>;
 }) {
-  const filterType = searchParams.type as ConsultationType | undefined;
+  const { type } = await searchParams;
+  const filterType = type as ConsultationType | undefined;
 
   // This calls our abstraction layer (which currently resolves mock data)
   const specialists = await getSpecialists(filterType);
 
+  const filters: { label: string; value?: ConsultationType }[] = [
+    { label: "All Experts" },
+    { label: "OBGYNs", value: "obgyn" },
+    { label: "Psychologists", value: "psychologist" },
+    { label: "Nutritionists", value: "nutritionist" },
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen bg-bg-base p-4 pt-10 pb-24">
-      <div className="flex justify-between items-end mb-6">
+    <div className="flex min-h-screen flex-col bg-background p-4 pb-28 pt-10">
+      <div className="mb-6 flex items-end justify-between">
         <div>
-          <h1 className="font-serif text-3xl font-bold text-text-primary">Experts</h1>
-          <p className="font-sans text-text-secondary mt-1">Farsi-speaking care.</p>
+          <h1 className="font-heading text-3xl font-extrabold tracking-tight text-foreground">
+            Experts
+          </h1>
+          <p className="mt-1 text-sm text-foreground-secondary">
+            Farsi-speaking care.
+          </p>
         </div>
-        <Badge variant="outline" className="bg-white">
-          <Filter className="h-3 w-3 mr-1" /> Filter
+        <Badge variant="outline" className="bg-card">
+          <Filter className="mr-1 size-3" /> Filter
         </Badge>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-4">
-        <Link href="/book" className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-colors ${!filterType ? 'bg-primary text-white' : 'bg-white text-text-secondary hover:bg-primary/5'}`}>
-          All Experts
-        </Link>
-        <Link href="/book?type=obgyn" className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-colors ${filterType === 'obgyn' ? 'bg-primary text-white' : 'bg-white text-text-secondary hover:bg-primary/5'}`}>
-          OBGYNs
-        </Link>
-        <Link href="/book?type=psychologist" className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-colors ${filterType === 'psychologist' ? 'bg-primary text-white' : 'bg-white text-text-secondary hover:bg-primary/5'}`}>
-          Psychologists
-        </Link>
-        <Link href="/book?type=nutritionist" className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-colors ${filterType === 'nutritionist' ? 'bg-primary text-white' : 'bg-white text-text-secondary hover:bg-primary/5'}`}>
-          Nutritionists
-        </Link>
+      <div className="scrollbar-hide mb-4 flex gap-2 overflow-x-auto pb-2">
+        {filters.map((f) => {
+          const active = (f.value ?? undefined) === filterType;
+          const href = f.value ? `/book?type=${f.value}` : "/book";
+          return (
+            <Link
+              key={f.label}
+              href={href}
+              className={cn(
+                "whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition-all",
+                active
+                  ? "bg-gradient-brand text-primary-foreground shadow-sm"
+                  : "bg-card text-foreground-secondary ring-1 ring-foreground/10 hover:bg-muted"
+              )}
+            >
+              {f.label}
+            </Link>
+          );
+        })}
       </div>
 
       <div className="space-y-4">
         {specialists.map((spec) => (
           <Link href={`/book/${spec.id}`} key={spec.id} className="block">
-            <Card className="border-0 shadow-sm hover:shadow-md transition-shadow bg-white overflow-hidden relative">
+            <Card className="relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
               {spec.type === "health_coach" && (
-                <div className="absolute top-0 right-0 px-3 py-1 bg-health-coach/10 text-[#6A8A5C] text-xs font-bold rounded-bl-xl flex items-center">
-                  <HeartHandshake className="w-3 h-3 mr-1" /> Health Coach
+                <div className="absolute right-0 top-0 flex items-center rounded-bl-xl bg-coach/10 px-3 py-1 text-xs font-bold text-coach">
+                  <HeartHandshake className="mr-1 size-3" /> Health Coach
                 </div>
               )}
               {spec.type === "doctor" && (
-                <div className="absolute top-0 right-0 px-3 py-1 bg-info/10 text-info text-xs font-bold rounded-bl-xl flex items-center">
-                  <ShieldCheck className="w-3 h-3 mr-1" /> EU Licensed
+                <div className="absolute right-0 top-0 flex items-center rounded-bl-xl bg-info/10 px-3 py-1 text-xs font-bold text-info">
+                  <ShieldCheck className="mr-1 size-3" /> EU Licensed
                 </div>
               )}
 
               <CardContent className="p-4">
                 <div className="flex gap-4">
-                  <Avatar className="h-16 w-16 border-2 border-primary/10">
+                  <Avatar className="size-16 ring-2 ring-primary/10">
                     <AvatarImage src={spec.avatarUrl} alt={spec.name} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-serif font-bold">
+                    <AvatarFallback className="bg-primary/10 font-heading font-bold text-primary">
                       {spec.name.substring(0, 2)}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 mt-2">
-                    <h3 className="font-serif text-lg font-bold text-text-primary leading-tight">{spec.name}</h3>
+                  <div className="mt-2 flex-1">
+                    <h3 className="font-heading text-lg font-bold leading-tight text-foreground">
+                      {spec.name}
+                    </h3>
 
-                    <div className="flex items-center gap-1 mt-1 text-xs text-text-muted">
-                      <Star className="h-3 w-3 fill-accent text-accent" />
-                      <span className="font-semibold text-text-primary">{spec.rating}</span>
+                    <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                      <Star className="size-3 fill-accent text-accent" />
+                      <span className="font-semibold text-foreground">
+                        {spec.rating}
+                      </span>
                       <span>({spec.reviewCount} reviews)</span>
                     </div>
 
-                    <div className="flex gap-1 mt-3 flex-wrap">
-                      {spec.languages.map(lang => (
-                         <span key={lang} className="text-[10px] uppercase tracking-wider font-bold text-text-secondary bg-bg-muted px-2 py-0.5 rounded-sm">
-                           {lang}
-                         </span>
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {spec.languages.map((lang) => (
+                        <span
+                          key={lang}
+                          className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-foreground-secondary"
+                        >
+                          {lang}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -90,8 +116,8 @@ export default async function BookingDirectoryPage({
         ))}
 
         {specialists.length === 0 && (
-          <div className="text-center py-12 px-4 text-text-muted">
-             No specialists found for this category right now.
+          <div className="py-12 text-center text-muted-foreground">
+            No specialists found for this category right now.
           </div>
         )}
       </div>

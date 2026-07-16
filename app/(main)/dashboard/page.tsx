@@ -5,24 +5,37 @@ import DashboardClient from "./DashboardClient";
 export default async function DashboardPage() {
   const supabase = await createClient();
 
-  // Protect the route
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
 
-  if (!user) {
-    return redirect("/login");
+  try {
+    const {
+      data: { user: authenticatedUser },
+    } = await supabase.auth.getUser();
+    user = authenticatedUser;
+  } catch {
+    // A local preview should remain reachable when Supabase is temporarily unavailable.
+    redirect("/login");
   }
 
-  // Ensure they have a profile
-  const { data: profile } = await supabase
-    .from("pregnancy_profiles")
-    .select("*")
-    .eq("user_id", user.id)
-    .single();
+  if (!user) {
+    redirect("/login");
+  }
+
+  let profile = null;
+
+  try {
+    const { data } = await supabase
+      .from("pregnancy_profiles")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+    profile = data;
+  } catch {
+    redirect("/login");
+  }
 
   if (!profile) {
-    return redirect("/setup");
+    redirect("/setup");
   }
 
   return <DashboardClient profile={profile} />;

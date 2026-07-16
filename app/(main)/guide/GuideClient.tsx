@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Sprout, Baby, Sunrise, CheckCircle2, Lightbulb, ChevronRight } from "lucide-react";
 import type { TimelineState, WeekContent, PostpartumWeekContent } from "@/lib/timeline/types";
-import { pregnancyWeeks, postpartumWeeks, ttcContent } from "@/lib/timeline/data";
+import { pregnancyWeeks, postpartumWeeks } from "@/lib/timeline/data";
 
 export default function GuideClient({ timeline }: { timeline: TimelineState }) {
   const router = useRouter();
@@ -16,22 +16,22 @@ export default function GuideClient({ timeline }: { timeline: TimelineState }) {
   const nextWeekContent = getNextWeekContent(stage, currentWeek);
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg-base pb-28">
+    <div className="flex flex-col min-h-screen bg-background pb-28">
       {/* Sticky header */}
-      <div className="bg-white px-4 pt-10 pb-4 shadow-sm sticky top-0 z-10 flex items-center gap-3">
+      <div className="bg-card px-4 pt-10 pb-4 shadow-sm sticky top-0 z-10 flex items-center gap-3">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => router.back()}
           className="-ml-2 rounded-full"
         >
-          <ArrowLeft className="h-5 w-5 text-text-primary" />
+          <ArrowLeft className="h-5 w-5 text-foreground" />
         </Button>
         <div className="flex-1 min-w-0">
-          <p className="text-xs uppercase tracking-widest font-bold text-text-muted truncate">
+          <p className="text-xs uppercase tracking-widest font-bold text-muted-foreground truncate">
             {trimesterLabel}
           </p>
-          <h1 className="font-serif text-xl font-bold text-text-primary leading-tight truncate">
+          <h1 className="font-heading text-xl font-bold text-foreground leading-tight truncate">
             {getPageTitle(stage, currentWeek)}
           </h1>
         </div>
@@ -78,12 +78,12 @@ function HeroCard({
   const hasBabySize = stage === "pregnant" && "babySize" in content && content.babySize;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
       {/* Colour band at top */}
       <div className="h-1.5 bg-gradient-to-r from-primary via-primary-light to-accent" />
 
       <div className="p-5 space-y-4">
-        <h2 className="font-serif text-2xl font-bold text-text-primary leading-snug">
+        <h2 className="font-heading text-2xl font-bold text-foreground leading-snug">
           {content.headline}
         </h2>
 
@@ -92,16 +92,16 @@ function HeroCard({
             <span className="text-3xl">🌱</span>
             <div>
               <p className="text-[10px] uppercase tracking-widest font-bold text-primary mb-0.5">
-                Baby's size this week
+                Baby&apos;s size this week
               </p>
-              <p className="font-semibold text-text-primary text-sm">
+              <p className="font-semibold text-foreground text-sm">
                 About the size of {(content as WeekContent).babySize}
               </p>
             </div>
           </div>
         )}
 
-        <p className="text-base text-text-secondary leading-relaxed">
+        <p className="text-base text-foreground-secondary leading-relaxed">
           {content.body}
         </p>
 
@@ -142,13 +142,13 @@ function SymptomsCard({
     "Normal this week";
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
-      <h3 className="font-serif text-lg font-bold text-text-primary">{label}</h3>
+    <div className="bg-card rounded-2xl shadow-sm p-5 space-y-4">
+      <h3 className="font-heading text-lg font-bold text-foreground">{label}</h3>
       <div className="space-y-3">
         {content.normalSymptoms.map((symptom, i) => (
           <div key={i} className="flex items-start gap-3">
             <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-text-secondary leading-snug">{symptom}</p>
+            <p className="text-sm text-foreground-secondary leading-snug">{symptom}</p>
           </div>
         ))}
       </div>
@@ -166,11 +166,11 @@ function TipCard({ tip }: { tip: string }) {
         <div className="bg-accent/20 p-2 rounded-full">
           <Lightbulb className="h-4 w-4 text-accent" />
         </div>
-        <h3 className="font-bold text-text-primary text-sm uppercase tracking-wider">
-          This week's tip
+        <h3 className="font-bold text-foreground text-sm uppercase tracking-wider">
+          This week&apos;s tip
         </h3>
       </div>
-      <p className="text-base text-text-secondary leading-relaxed">{tip}</p>
+      <p className="text-base text-foreground-secondary leading-relaxed">{tip}</p>
     </div>
   );
 }
@@ -191,14 +191,14 @@ function NextWeekCard({
     stage === "postpartum" ? `Week ${nextWeek} Postpartum` : `Week ${nextWeek}`;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div className="bg-card rounded-2xl shadow-sm overflow-hidden">
       <div className="px-5 py-4 border-b border-border/40">
-        <p className="text-[10px] uppercase tracking-widest font-bold text-text-muted">Coming up</p>
-        <h3 className="font-serif text-base font-bold text-text-primary mt-0.5">{label}</h3>
+        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Coming up</p>
+        <h3 className="font-heading text-base font-bold text-foreground mt-0.5">{label}</h3>
       </div>
       <div className="px-5 py-4 flex items-center justify-between gap-4">
-        <p className="text-sm text-text-secondary leading-snug flex-1">{nextContent.headline}</p>
-        <ChevronRight className="h-5 w-5 text-text-muted flex-shrink-0" />
+        <p className="text-sm text-foreground-secondary leading-snug flex-1">{nextContent.headline}</p>
+        <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
       </div>
     </div>
   );

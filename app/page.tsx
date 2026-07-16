@@ -1,10 +1,11 @@
-import Image from "next/image";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold text-primary">MeMomy</h1>
-      <p className="mt-4 text-lg text-muted-foreground">Pitch MVP Development</p>
-    </main>
-  );
+export default async function Home() {
+  const cookieStore = await cookies();
+  const hasSession = cookieStore
+    .getAll()
+    .some((cookie) => /^sb-.*-auth-token(?:\.\d+)?$/.test(cookie.name));
+
+  redirect(hasSession ? "/dashboard" : "/login");
 }

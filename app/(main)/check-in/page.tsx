@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { submitMoodCheckin } from "@/app/actions/checkin";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { HeartPulse } from "lucide-react";
@@ -14,7 +20,6 @@ export default function CheckInPage() {
   const [q1, setQ1] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
   const [error, setError] = useState<string | null>(null);
 
   const getEmoji = (val: number) => {
@@ -53,51 +58,58 @@ export default function CheckInPage() {
           setTimeout(() => router.push("/dashboard"), 2000);
         }
       } else {
-         setError(result.error || "An unknown database error occurred.");
+        setError(result.error || "An unknown database error occurred.");
       }
-    } catch (err: any) {
-      setError(err.message || "Failed to call server action.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to call server action.");
     }
     setLoading(false);
   };
 
-
   if (success) {
     return (
-      <div className="flex h-[80vh] flex-col items-center justify-center p-6 text-center space-y-4">
-        <div className="bg-primary/10 p-6 rounded-full inline-block mb-4">
-          <HeartPulse className="h-12 w-12 text-primary" />
+      <div className="flex h-[80vh] flex-col items-center justify-center space-y-4 p-6 text-center">
+        <div className="animate-fade-up flex size-24 items-center justify-center rounded-full bg-gradient-brand shadow-glow">
+          <HeartPulse className="size-12 text-primary-foreground" />
         </div>
-        <h2 className="font-serif text-3xl font-bold text-primary">Thank you.</h2>
-        <p className="text-text-secondary">We've saved your check-in for this week.</p>
+        <h2 className="animate-fade-up font-heading text-3xl font-extrabold tracking-tight text-primary">
+          Thank you.
+        </h2>
+        <p className="animate-fade-up text-foreground-secondary">
+          We&apos;ve saved your check-in for this week.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg-base p-4 pt-12 pb-24">
-      <Card className="border-0 shadow-lg bg-white overflow-hidden">
-        <div className="h-2 bg-gradient-to-r from-primary to-accent"></div>
-        <CardHeader className="text-center pb-8 border-b border-border/40">
-          <CardTitle className="font-serif text-2xl font-bold text-primary mb-2">Weekly Check-in</CardTitle>
-          <CardDescription className="text-base text-text-secondary">
-            Take a moment for yourself. How have you been feeling overall this past week?
+    <div className="flex min-h-screen flex-col bg-background p-4 pb-28 pt-12">
+      <Card className="animate-fade-up overflow-hidden border-0 shadow-lg">
+        <div className="h-1.5 bg-gradient-spectrum" />
+        <CardHeader className="border-b border-border/60 pb-8 text-center">
+          <CardTitle className="font-heading text-2xl font-bold tracking-tight text-primary">
+            Weekly Check-in
+          </CardTitle>
+          <CardDescription className="text-base text-foreground-secondary">
+            Take a moment for yourself. How have you been feeling overall this
+            past week?
           </CardDescription>
         </CardHeader>
 
         <CardContent className="pt-8">
           <form id="checkin-form" onSubmit={handleSubmit} className="space-y-12">
-
             {error && (
-              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive font-medium border border-destructive/20 text-center">
+              <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-center text-sm font-medium text-destructive">
                 {error}
               </div>
             )}
 
             <div className="space-y-8">
-              <div className="flex justify-center items-center flex-col space-y-2">
+              <div className="flex flex-col items-center justify-center space-y-2">
                 <span className="text-6xl">{getEmoji(score[0])}</span>
-                <span className="font-bold text-lg text-primary">{getText(score[0])}</span>
+                <span className="text-lg font-bold text-primary">
+                  {getText(score[0])}
+                </span>
               </div>
 
               <Slider
@@ -109,15 +121,21 @@ export default function CheckInPage() {
                 onValueChange={setScore}
                 className="py-4"
               />
-              <div className="flex justify-between text-xs text-text-muted font-semibold px-1">
+              <div className="flex justify-between px-1 text-xs font-semibold text-muted-foreground">
                 <span>Struggling</span>
                 <span>Great</span>
               </div>
             </div>
 
             <div className="space-y-3">
-              <label htmlFor="q1" className="block text-sm font-semibold text-text-primary">
-                Is there anything specific on your mind? <span className="text-text-muted font-normal">(Optional)</span>
+              <label
+                htmlFor="q1"
+                className="block text-sm font-semibold text-foreground"
+              >
+                Is there anything specific on your mind?{" "}
+                <span className="font-normal text-muted-foreground">
+                  (Optional)
+                </span>
               </label>
               <textarea
                 id="q1"
@@ -125,11 +143,16 @@ export default function CheckInPage() {
                 value={q1}
                 onChange={(e) => setQ1(e.target.value)}
                 placeholder="Sleep, anxiety, physical changes..."
-                className="flex w-full rounded-md border border-input bg-white/50 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                className="flex w-full rounded-xl border border-input bg-muted/40 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               ></textarea>
             </div>
 
-            <Button type="submit" disabled={loading} className="w-full bg-accent hover:bg-accent/90 h-12 text-base font-semibold text-white">
+            <Button
+              type="submit"
+              variant="accent"
+              disabled={loading}
+              className="h-12 w-full text-base font-semibold"
+            >
               {loading ? "Saving..." : "Save Check-in"}
             </Button>
           </form>

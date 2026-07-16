@@ -3,10 +3,23 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { AlertCircle, PhoneCall, CalendarHeart, ArrowLeft, Search, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  AlertCircle,
+  PhoneCall,
+  CalendarHeart,
+  ArrowLeft,
+  Search,
+  X,
+} from "lucide-react";
 import type { JourneyStage } from "@/lib/timeline/types";
 import type { WarnCategory, WarnSign, Severity } from "@/lib/warning-signs/data";
 
@@ -14,6 +27,21 @@ const STAGE_LABELS: Record<JourneyStage, string> = {
   ttc: "Trying to Conceive",
   pregnant: "Pregnancy",
   postpartum: "Postpartum",
+};
+
+const SEVERITY_VARIANT: Record<
+  Severity,
+  React.ComponentProps<typeof Badge>["variant"]
+> = {
+  emergency: "destructive",
+  booking: "warning",
+  monitor: "secondary",
+};
+
+const SEVERITY_LABEL: Record<Severity, string> = {
+  emergency: "Alert",
+  booking: "See provider",
+  monitor: "Monitor",
 };
 
 interface Props {
@@ -40,7 +68,7 @@ export default function WarningSignsClient({ stage, categories }: Props) {
         items: cat.items.filter(
           (item) =>
             item.title.toLowerCase().includes(q) ||
-            item.description.toLowerCase().includes(q)
+            item.description.toLowerCase().includes(q),
         ),
       }))
       .filter((cat) => cat.items.length > 0);
@@ -64,7 +92,8 @@ export default function WarningSignsClient({ stage, categories }: Props) {
         await supabase.from("warning_sign_interactions").insert({
           user_id: user.id,
           sign_key: selectedSign.id,
-          escalation_chosen: action === "emergency_call" ? "emergency" : action,
+          escalation_chosen:
+            action === "emergency_call" ? "emergency" : action,
         });
       }
     } catch {
@@ -85,59 +114,62 @@ export default function WarningSignsClient({ stage, categories }: Props) {
   const totalCount = categories.reduce((n, c) => n + c.items.length, 0);
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg-base pb-28">
+    <div className="flex min-h-screen flex-col bg-background pb-28">
       {/* Header */}
-      <div className="bg-white px-4 pt-10 pb-5 shadow-sm rounded-b-3xl">
-        <div className="flex items-center gap-3 mb-4">
+      <div className="bg-glass rounded-b-4xl px-4 pb-5 pt-10 shadow-sm ring-1 ring-foreground/5">
+        <div className="mb-4 flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
-            className="rounded-full -ml-1 flex-shrink-0"
+            className="-ml-1 flex-shrink-0 rounded-full"
+            aria-label="Go back"
           >
-            <ArrowLeft className="h-5 w-5 text-text-primary" />
+            <ArrowLeft className="size-5 text-foreground" />
           </Button>
           <div>
-            <p className="text-[10px] uppercase tracking-widest font-bold text-text-muted">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               {STAGE_LABELS[stage]}
             </p>
-            <h1 className="font-serif text-2xl font-bold text-primary leading-tight">
+            <h1 className="font-heading text-2xl font-bold leading-tight text-primary">
               Is this normal?
             </h1>
           </div>
         </div>
-        <p className="text-sm text-text-secondary mb-4 leading-relaxed">
-          {totalCount} symptoms across {categories.length} categories — tap any to learn what it means and what to do.
+        <p className="mb-4 text-sm leading-relaxed text-foreground-secondary">
+          {totalCount} symptoms across {categories.length} categories — tap any
+          to learn what it means and what to do.
         </p>
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted pointer-events-none" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search symptoms…"
-            className="w-full h-11 pl-9 pr-9 rounded-xl border border-input bg-bg-muted text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+            className="h-11 w-full rounded-xl border border-input bg-muted/50 pl-9 pr-9 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search"
             >
-              <X className="h-4 w-4" />
+              <X className="size-4" />
             </button>
           )}
         </div>
       </div>
 
       {/* Symptom List */}
-      <div className="px-4 pt-5 space-y-3">
+      <div className="space-y-3 px-4 pt-5">
         {filtered.length === 0 && (
-          <div className="text-center py-16 text-text-muted">
-            <Search className="h-8 w-8 mx-auto mb-3 opacity-40" />
-            <p className="font-semibold">No symptoms found for "{query}"</p>
-            <p className="text-sm mt-1">Try a different word</p>
+          <div className="py-16 text-center text-muted-foreground">
+            <Search className="mx-auto mb-3 size-8 opacity-40" />
+            <p className="font-semibold">No symptoms found for &quot;{query}&quot;</p>
+            <p className="mt-1 text-sm">Try a different word</p>
           </div>
         )}
 
@@ -146,41 +178,35 @@ export default function WarningSignsClient({ stage, categories }: Props) {
             <AccordionItem
               key={idx}
               value={`cat-${idx}`}
-              className="bg-white border border-border/50 rounded-xl px-4 shadow-sm"
+              className="rounded-2xl border border-border/60 bg-card px-4 shadow-sm"
             >
-              <AccordionTrigger className="font-serif text-base font-bold text-text-primary hover:no-underline py-4">
+              <AccordionTrigger className="py-4 font-heading text-base font-bold text-foreground hover:no-underline">
                 <span className="flex items-center gap-2">
                   {group.category}
-                  <span className="text-[10px] font-bold bg-primary/10 text-primary rounded-full px-2 py-0.5 normal-case tracking-normal">
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold normal-case tracking-normal text-primary">
                     {group.items.length}
                   </span>
                 </span>
               </AccordionTrigger>
-              <AccordionContent className="pb-4 space-y-2">
+              <AccordionContent className="space-y-2 pb-4">
                 {group.items.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => openSheet(item)}
-                    className="w-full text-left bg-bg-muted rounded-xl px-4 py-3 flex items-center justify-between hover:bg-primary/5 transition-colors"
+                    className="flex w-full items-center justify-between rounded-xl bg-muted/60 px-4 py-3 transition-colors hover:bg-primary/5"
                   >
-                    <span className="font-semibold text-text-primary text-sm pr-3 leading-snug">
+                    <span className="pr-3 text-sm font-semibold leading-snug text-foreground">
                       {item.title}
                     </span>
-                    <span className="flex-shrink-0">
-                      {item.severity === "emergency" ? (
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 bg-red-100 text-red-700 rounded-full flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" /> Alert
-                        </span>
-                      ) : item.severity === "booking" ? (
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 bg-accent/10 text-accent rounded-full">
-                          See provider
-                        </span>
-                      ) : (
-                        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 bg-primary/10 text-primary rounded-full">
-                          Monitor
-                        </span>
+                    <Badge
+                      variant={SEVERITY_VARIANT[item.severity]}
+                      className="flex-shrink-0 gap-1"
+                    >
+                      {item.severity === "emergency" && (
+                        <AlertCircle className="size-3" />
                       )}
-                    </span>
+                      {SEVERITY_LABEL[item.severity]}
+                    </Badge>
                   </button>
                 ))}
               </AccordionContent>
@@ -193,52 +219,35 @@ export default function WarningSignsClient({ stage, categories }: Props) {
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
           side="bottom"
-          className="rounded-t-3xl p-0 max-h-[88vh] overflow-y-auto"
+          className="max-h-[88vh] overflow-y-auto rounded-t-4xl p-0"
         >
           {selectedSign && (
-            <div
-              className={`p-6 pt-8 space-y-5 ${
-                selectedSign.severity === "emergency" ? "bg-red-50" : "bg-white"
-              }`}
-            >
-              {/* Severity badge */}
-              <div>
+            <div className="space-y-5 p-6 pt-8">
+              <Badge
+                variant={SEVERITY_VARIANT[selectedSign.severity]}
+                className="mb-1 gap-1"
+              >
                 {selectedSign.severity === "emergency" && (
-                  <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-3 py-1 bg-red-100 text-red-700 rounded-full mb-3">
-                    <AlertCircle className="w-3 h-3" /> Emergency
-                  </span>
+                  <AlertCircle className="size-3" />
                 )}
-                {selectedSign.severity === "booking" && (
-                  <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-3 py-1 bg-accent/10 text-accent rounded-full mb-3">
-                    See a provider
-                  </span>
-                )}
-                {selectedSign.severity === "monitor" && (
-                  <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider px-3 py-1 bg-primary/10 text-primary rounded-full mb-3">
-                    Monitor
-                  </span>
-                )}
-              </div>
+                {selectedSign.severity === "emergency"
+                  ? "Emergency"
+                  : SEVERITY_LABEL[selectedSign.severity]}
+              </Badge>
 
-              <SheetHeader className="text-left p-0">
-                <SheetTitle
-                  className={`font-serif text-2xl font-bold leading-snug ${
-                    selectedSign.severity === "emergency"
-                      ? "text-red-700"
-                      : "text-text-primary"
-                  }`}
-                >
+              <SheetHeader className="p-0 text-left">
+                <SheetTitle className="font-heading text-2xl font-bold leading-snug text-foreground">
                   {selectedSign.title}
                 </SheetTitle>
               </SheetHeader>
 
               {/* Description + Advice */}
-              <div className="bg-white/70 backdrop-blur-sm rounded-xl p-4 border border-black/5 space-y-3">
-                <p className="text-sm text-text-secondary italic leading-relaxed">
-                  "{selectedSign.description}"
+              <div className="space-y-3 rounded-2xl border border-border/60 bg-muted/40 p-4">
+                <p className="text-sm italic leading-relaxed text-foreground-secondary">
+                  &quot;{selectedSign.description}&quot;
                 </p>
-                <div className="border-t border-border/30 pt-3">
-                  <p className="text-base text-text-primary leading-relaxed">
+                <div className="border-t border-border/40 pt-3">
+                  <p className="text-base leading-relaxed text-foreground">
                     {selectedSign.advice}
                   </p>
                 </div>
@@ -247,33 +256,41 @@ export default function WarningSignsClient({ stage, categories }: Props) {
               {/* Actions */}
               <div className="space-y-3 pb-2">
                 {selectedSign.severity === "emergency" && (
-                  <a
-                    href="tel:911"
-                    onClick={() => handleAction("emergency_call")}
-                    className="flex items-center justify-center gap-2 w-full h-14 bg-red-600 hover:bg-red-700 text-white font-bold text-lg rounded-xl shadow-lg shadow-red-200 transition-colors"
+                  <Button
+                    variant="destructive"
+                    size="lg"
+                    asChild
+                    className="h-14 w-full text-lg font-bold shadow-lg"
                   >
-                    <PhoneCall className="h-5 w-5" /> Call 911
-                  </a>
+                    <a
+                      href="tel:911"
+                      onClick={() => handleAction("emergency_call")}
+                    >
+                      <PhoneCall className="size-5" /> Call 911
+                    </a>
+                  </Button>
                 )}
 
                 {(selectedSign.severity === "booking" ||
                   selectedSign.severity === "emergency") && (
                   <Button
-                    className="w-full h-12 bg-accent hover:bg-accent/90 text-white font-bold"
+                    variant="accent"
+                    className="h-12 w-full font-bold"
                     onClick={() => handleAction("booking")}
                     disabled={loading}
                   >
-                    <CalendarHeart className="mr-2 h-5 w-5" /> Consult a Specialist
+                    <CalendarHeart className="mr-2 size-5" /> Consult a
+                    Specialist
                   </Button>
                 )}
 
                 <Button
                   variant="ghost"
-                  className="w-full h-12 font-semibold text-text-muted hover:text-text-primary"
+                  className="h-12 w-full font-semibold text-muted-foreground hover:text-foreground"
                   onClick={() => handleAction("monitor")}
                   disabled={loading}
                 >
-                  I'm okay, just monitoring
+                  I&apos;m okay, just monitoring
                 </Button>
               </div>
             </div>

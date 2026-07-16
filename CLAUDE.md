@@ -4,20 +4,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- **Development server**: `npm run dev`
+All commands run from the `memomy-app/` directory (the actual Next.js app root):
+
+- **Development server**: `npm run dev` — starts Turbopack dev server at localhost:3000
 - **Build**: `npm run build`
 - **Lint**: `npm run lint`
 
+No test runner is configured yet; T-102-04 in the backlog tracks adding integration tests.
+
+## Environment Setup
+
+Copy `.env.example` to `.env.local` and fill in:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+NEXT_PUBLIC_ASADOC_MODE=mock   # set to "live" when AsaDoc API is ready
+```
+
+Database: run the two SQL migration files in order via the Supabase dashboard SQL editor — no Supabase CLI config is present. Path alias `@/*` maps to the project root.
+
 ## Project Structure & Architecture
 
-MeMomy is a PWA for Iranian diaspora women covering the pregnancy journey, deeply integrated with AsaDoc (telehealth) for Farsi-speaking specialists. 
+MeMomy is a PWA for Iranian diaspora women covering the pregnancy journey, deeply integrated with AsaDoc (telehealth) for Farsi-speaking specialists.
 
-**Stack:** Next.js 16 (App Router), shadcn/ui, Tailwind CSS v4, Supabase (for Auth/PostgreSQL).
+**Stack:** Next.js 16 (App Router) · React 19 · TypeScript (strict) · shadcn/ui · Tailwind CSS v4 · Supabase (Auth + PostgreSQL)
 
-- `app/`: Next.js App Router root. Use Server Components by default; keep `'use client'` components at the leaf level whenever possible. It contains route groups like `(auth)` for auth flows and `(main)` for authenticated dashboard experiences. 
-- `components/`: UI and shared components, largely derived from shadcn/ui primitives.
-- `lib/asadoc/`: Core abstraction for the AsaDoc integration. Modeled so `ASADOC_MODE` env var handles switching between mock behavior and real API interactions when implemented.
-- `utils/supabase/`: Supabase clients instantiated for server vs. client boundaries.
+> **Important:** See `AGENTS.md` — Next.js 16 has breaking changes vs. training data. Don't assume API shape from prior knowledge.
+
+### Route Layout
+
+Route groups separate auth from the authenticated experience:
+
+- `app/(auth)/` — unauthenticated pages (login, signup), fully client-side forms, no shared nav
+- `app/(main)/` — authenticated routes; `layout.tsx` wraps all children with `BottomNav` (4 tabs: Home/Calendar/Wellbeing/Profile)
+- `app/auth/callback/` and `app/auth/signout/` — Route Handlers for Supabase OAuth code exchange and sign-out
+- `app/actions/` — Server Actions for all mutations (`booking.ts`, `checkin.ts`, `profile.ts`)
+
+### Server / Client Component Convention
+
+Every `(main)` route follows a strict split:
+
+1. `page.tsx` — async Server Component: authenticates user, fetches from Supabase, redirects to `/login` if no session, passes typed props down
+2. `*Client.tsx` (e.g. `DashboardClient.tsx`, `GuideClient.tsx`) — `"use client"` leaf: receives pre-fetched data as props, handles interactivity with `useState`
+
+Server Actions in `app/actions/` use `revalidatePath()` + the caller calls `router.refresh()` to re-sync client state after mutations. There is no global state library — all persistent state lives in Supabase.
+
+### Key Libraries
+
+- `lib/timeline/utils.ts` — `getTimelineState(stage, dueDate)` is the central date-math function. It derives the current week, trimester label, progress percent, and week-specific content from the stored `stage` + `due_date` columns. All 40 pregnancy weeks and 12 postpartum weeks have authored content in `lib/timeline/data.ts`.
+- `lib/warning-signs/data.ts` — `getWarningSigns(stage)` returns stage-aware warning signs. Each sign has `severity: "emergency" | "booking" | "monitor"`. Emergency signs always surface a "Call 911" button first, then AsaDoc booking.
+- `lib/asadoc/index.ts` — AsaDoc abstraction. In `mock` mode (default) returns hardcoded specialists; `live` mode calls the real API (not yet implemented). Exports: `getSpecialists()`, `getSpecialist()`, `getAvailability()`.
+- `utils/supabase/client.ts` / `server.ts` — Supabase clients scoped to browser vs. server boundaries. `middleware.ts` refreshes the session cookie on every non-static request.
+- `lib/utils.ts` — `cn()` utility (clsx + tailwind-merge).
 
 ## Backlog & Task Tracking
 
@@ -42,5 +81,5 @@ The `backlog/` directory is the single source of truth for all product work:
 - **AsaDoc Labeling Guidelines**: In the AsaDoc integration, ensure strict differentiation:
   - EU-licensed doctors must be labeled "Doctor" with their license clearly visible.
   - Iran-licensed practitioners must be labeled "Health Coach" and must display a disclaimer: "lifestyle/wellness only, no clinical advice".
-- **Design Decisions**: Rely on Purple Primary (`#7C5CBF`) and Teal Accent (`#4DB6AC`). Avoid stereotypical or clichéd tropes (i.e. keep away from pink colors, generic baby motifs, or explicitly clinical imagery). Use Lora for headers and Raleway for body.
-- **Crisis Information**: The system must prioritize crisis intervention over generalized warnings. Hardcoded regional resources (e.g. DE 0800 111 0 111, SE 90101, UK 116 123) should be surfaced actively without ambiguity in any psychological check-in workflows.
+- **Design Decisions**: Rely on Purple Primary (`#7C5CBF`) and Teal Accent (`#4DB6AC`). Avoid stereotypical or clichéd tropes (i.e. keep away from pink colors, generic baby motifs, or explicitly clinical imagery). Use Lora for headers and Raleway for body. Mobile-first layout: `max-w-md` container, `pb-safe` on BottomNav for iOS home indicator.
+- **Crisis Information**: The system must prioritize crisis intervention over generalized warnings. Hardcoded regional resources (e.g. DE 0800 111 0 111, SE 90101, UK 116 123) should be surfaced actively without ambiguity in any psychological check-in workflows. Check-in scores below 5 trigger `/check-in/escalation`.

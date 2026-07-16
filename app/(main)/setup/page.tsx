@@ -34,7 +34,7 @@ export default function SetupPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <Card className="w-full max-w-md shadow-xl border-primary/10">
         <CardHeader className="text-center pb-8 border-b border-border/40">
-          <CardTitle className="font-serif text-3xl font-bold text-primary">Let's Personalize</CardTitle>
+          <CardTitle className="font-heading text-3xl font-bold text-primary">Let&apos;s Personalize</CardTitle>
           <CardDescription className="text-base mt-2">
             MeMomy guides you through exactly what you need, right when you need it. Let us know where you are in your journey.
           </CardDescription>
@@ -50,7 +50,7 @@ export default function SetupPage() {
             <div className="space-y-3">
               <Label htmlFor="stage-select" className="text-base font-semibold">Where are you in your journey?</Label>
               <Select name="stage" value={stage} onValueChange={setStage}>
-                <SelectTrigger id="stage-select" className="h-12 bg-white/50 focus:ring-primary">
+                <SelectTrigger id="stage-select" className="h-12 bg-card/50 focus:ring-primary">
                   <SelectValue placeholder="Select your stage" />
                 </SelectTrigger>
                 <SelectContent>
@@ -69,9 +69,9 @@ export default function SetupPage() {
                   name="due_date"
                   id="due_date"
                   required
-                  className="flex h-12 w-full rounded-md border border-input bg-white/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 w-full rounded-md border border-input bg-card/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
-                <p className="text-xs text-muted-foreground mt-1">If you aren't sure, an estimate is perfectly fine.</p>
+                <p className="text-xs text-muted-foreground mt-1">If you aren&apos;t sure, an estimate is perfectly fine.</p>
               </div>
             )}
 
@@ -83,7 +83,7 @@ export default function SetupPage() {
                   name="due_date"
                   id="due_date"
                   required
-                  className="flex h-12 w-full rounded-md border border-input bg-white/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-12 w-full rounded-md border border-input bg-card/50 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
             )}

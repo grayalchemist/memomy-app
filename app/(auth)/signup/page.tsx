@@ -24,48 +24,38 @@ export default function SignupPage() {
     setError(null);
     setMessage(null);
 
-    // Note: For the pitch MVP, we disabled email confirmation in Supabase options
-    // so it logs you in immediately.
-    const { error: signUpError, data } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
 
-    if (signUpError) {
-      setError(signUpError.message);
-    } else {
-      // Create user record in our custom users table
-      if (data.user) {
-        const { error: insertError } = await supabase
-          .from("users")
-          .insert([
-            { id: data.user.id, email: data.user.email }
-          ]);
-
-        if (insertError) {
-          console.error("Error creating user record:", insertError);
-        }
+      if (signUpError) {
+        setError(signUpError.message);
+      } else {
+        router.push("/dashboard");
       }
-
-      router.push("/dashboard"); // Redirect straight to dashboard for the Pitch Demo
+    } catch {
+      setError("We could not reach the secure sign-up service. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="font-serif text-4xl font-bold tracking-tight text-primary">MeMomy</h1>
+          <h1 className="font-heading text-4xl font-bold tracking-tight text-primary">MeMomy</h1>
           <p className="mt-3 font-sans text-lg text-muted-foreground">Set up your account to continue.</p>
         </div>
 
         <Card className="shadow-lg border-primary/10">
           <CardHeader>
-            <CardTitle className="font-serif text-2xl font-semibold">Create an account</CardTitle>
+            <CardTitle className="font-heading text-2xl font-semibold">Create an account</CardTitle>
             <CardDescription className="font-sans">We keep your health data private and secure.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -90,7 +80,7 @@ export default function SignupPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white/50 focus-visible:ring-primary"
+                  className="bg-card/50 focus-visible:ring-primary"
                 />
               </div>
               <div className="space-y-2">
@@ -101,7 +91,7 @@ export default function SignupPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="bg-white/50 focus-visible:ring-primary"
+                  className="bg-card/50 focus-visible:ring-primary"
                 />
                 <p className="text-xs text-muted-foreground">Must be at least 6 characters.</p>
               </div>
